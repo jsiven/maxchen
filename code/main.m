@@ -14,7 +14,50 @@ C0 = get_C('default',f,M);
 Ca = get_C('aggressive',f,M);
 Cp = get_C('passive',f,M);
 
-%% Value functions (valueD.eps, valueA.eps)
+%% Bluff distributions (Figure 1)
+
+figH = figure,
+xx = 9:M;
+subplot(1,2,1)
+pp0 = f(xx); pp0 = pp0/sum(pp0);
+plot(xx-1,pp0,'bo--')
+hold on
+pp = (1:numel(xx))'.*pp0; pp = pp/sum(pp);
+plot(xx-1,pp,'ro--')
+hold on
+pp = (numel(xx):-1:1)'.*pp0; pp = pp/sum(pp);
+plot(xx-1,pp,'go--')
+hold on
+a = axis; 
+axis([xx(1)-1 M-1 a(3:4)])
+xticks([xx-1])
+figH.CurrentAxes.TickLabelInterpreter='latex';
+xticklabels([{'$a+1$','','','$a+3$'} repmat({''},1,numel(xx)-8) {'$M-3$','','','$M$'}])
+title('$C(a,r,b)$','Interpreter','latex')
+xlabel('$b$','Interpreter','latex')
+legend({'Default','Aggressive','Passive'},'Interpreter','latex')
+subplot(1,2,2)
+pp0 = f(xx); pp0 = pp0/sum(pp0);
+plot(xx-1,pp0./pp0,'bo--')
+hold on
+pp = (1:numel(xx))'.*pp0; pp = pp/sum(pp);
+plot(xx-1,pp./pp0,'ro--')
+hold on
+pp = (numel(xx):-1:1)'.*pp0; pp = pp/sum(pp);
+plot(xx-1,pp./pp0,'go--')
+hold on
+a = axis; axis([xx(1)-1 M-1 a(3:4)])
+xticks([xx-1])
+figH.CurrentAxes.TickLabelInterpreter='latex';
+xticklabels([{'$a+1$','','','$a+3$'} repmat({''},1,numel(xx)-8) {'$M-3$','','','$M$'}])
+legend({'Default','Aggressive','Passive'},'Interpreter','latex')
+title('$C(a,r,b) / C_0(a,r,b)$','Interpreter','latex')
+xlabel('$b$','Interpreter','latex')
+
+set(figH,'Position',[0 0 900 400]);
+saveas(figH,'showC','epsc');
+
+%% Value functions (Figure 2, Figure 3) 
 
 cs = {'D','A'};
 for j = 1:numel(cs)
@@ -64,50 +107,8 @@ for j = 1:numel(cs)
     saveas(figH,['value' cs{j}],'epsc');
 end
 
-%% Bluff distributions (showC.eps)
 
-figH = figure,
-xx = 9:M;
-subplot(1,2,1)
-pp0 = f(xx); pp0 = pp0/sum(pp0);
-plot(xx-1,pp0,'bo--')
-hold on
-pp = (1:numel(xx))'.*pp0; pp = pp/sum(pp);
-plot(xx-1,pp,'ro--')
-hold on
-pp = (numel(xx):-1:1)'.*pp0; pp = pp/sum(pp);
-plot(xx-1,pp,'go--')
-hold on
-a = axis; 
-axis([xx(1)-1 M-1 a(3:4)])
-xticks([xx-1])
-figH.CurrentAxes.TickLabelInterpreter='latex';
-xticklabels([{'$a+1$','','','$a+3$'} repmat({''},1,numel(xx)-8) {'$M-3$','','','$M$'}])
-title('$C(a,r,b)$','Interpreter','latex')
-xlabel('$b$','Interpreter','latex')
-legend({'Default','Aggressive','Passive'},'Interpreter','latex')
-subplot(1,2,2)
-pp0 = f(xx); pp0 = pp0/sum(pp0);
-plot(xx-1,pp0./pp0,'bo--')
-hold on
-pp = (1:numel(xx))'.*pp0; pp = pp/sum(pp);
-plot(xx-1,pp./pp0,'ro--')
-hold on
-pp = (numel(xx):-1:1)'.*pp0; pp = pp/sum(pp);
-plot(xx-1,pp./pp0,'go--')
-hold on
-a = axis; axis([xx(1)-1 M-1 a(3:4)])
-xticks([xx-1])
-figH.CurrentAxes.TickLabelInterpreter='latex';
-xticklabels([{'$a+1$','','','$a+3$'} repmat({''},1,numel(xx)-8) {'$M-3$','','','$M$'}])
-legend({'Default','Aggressive','Passive'},'Interpreter','latex')
-title('$C(a,r,b) / C_0(a,r,b)$','Interpreter','latex')
-xlabel('$b$','Interpreter','latex')
-
-set(figH,'Position',[0 0 900 400]);
-saveas(figH,'showC','epsc');
-
-%% Public info simulations
+%% Public info simulations (Figure 4)
 
 nn = 1e6;
 [V,N,O,score,leg_str] = deal({});
@@ -139,10 +140,10 @@ legend(leg_str_,'location','northwest','Interpreter','latex')
 figH.CurrentAxes.TickLabelInterpreter='latex';
 xlabel('No. games (thousands)','Interpreter','latex')
 
-saveas(figH,['C:\Users\user\Desktop\Maxchen\Public'],'epsc');
+saveas(figH,['Public'],'epsc');
 %(mm ./ ss) * sqrt(2500)
 
-%% Private info simulations
+%% Private info simulations (Table 1)
 
 nn = 1e6;
 [V,N,O,score] = deal({});
@@ -199,7 +200,7 @@ table_str = sprintf([...
 '&Passive & %3.2f&%3.2f&%3.2f\\\\'],[table(1,:) table(2,:) table(3,:)]);
  disp(table_str)
 
-%% Private info, all possibilities:
+%% Private info, all possibilities (Table 2):
 
 actions = {[1 1],[1 2],[1 3],[2 1],[2 2],[2 3],[3 1],[3 2],[3 3]};
 Cs = {C0,Ca,Cp};
@@ -243,5 +244,7 @@ table = sprintf([...
                 '&$P,A$ &  &     &     &     &     &     &     &     &%3.2f\\\\ \n' ...
                 '&$P,P$ &  &     &     &     &     &     &     &     &     \\\\ \n'],P_);
 disp(table)
+
+% Nash equilibrium:
 x = LemkeHowson(-P,P);
 [x{1} x{2}]
